@@ -130,8 +130,8 @@ public class WorkshopServerApplication {
         server.get("/api/v1/favorites", ctx -> {
             List<FavoriteItem> favorites = List.of(
                 new FavoriteItem("watchtower", "Medieval Watchtower", "Defense", "A 16-block tall stone and timber observation tower.", "a medieval watchtower with arrow slits"),
-                new FavoriteItem("cottage", "Rustic Timber Cottage", "Residential", "A cozy countryside house with a gabled spruce roof.", "a small cozy timber cottage"),
-                new FavoriteItem("fountain", "Courtyard Fountain", "Decoration", "A stone brick ornamental water fountain.", "a stone courtyard fountain")
+                new FavoriteItem("cottage", "Rustic Timber Cottage", "Residential", "A cozy countryside house with a gabled spruce roof and oak floor.", "a small cozy timber cottage"),
+                new FavoriteItem("garden", "Tranquil Garden & Oak Tree", "Nature", "A serene garden with a leafy oak tree, stone path, flowerbeds, and bench.", "a peaceful garden with a leafy oak tree and flowers")
             );
             ctx.json(favorites);
         });
@@ -154,9 +154,11 @@ public class WorkshopServerApplication {
         cacheService.put("cottage", geminiClient.getEmbedding("cottage"), resCottage);
         cacheService.put("house", geminiClient.getEmbedding("house"), resCottage);
 
-        BuildRequest reqFountain = new BuildRequest("courtyard stone fountain", "classical", 42);
-        BuildResult resFountain = builderEngine.generate(reqFountain);
-        cacheService.put("fountain", geminiClient.getEmbedding("fountain"), resFountain);
+        BuildRequest reqGarden = new BuildRequest("tranquil garden with oak tree", "nature", 42);
+        BuildResult resGarden = builderEngine.generate(reqGarden);
+        cacheService.put("garden", geminiClient.getEmbedding("garden"), resGarden);
+        cacheService.put("tree", geminiClient.getEmbedding("tree"), resGarden);
+        cacheService.put("park", geminiClient.getEmbedding("park"), resGarden);
     }
 
     private static int getPort() {
