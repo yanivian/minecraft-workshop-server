@@ -10,12 +10,14 @@ import com.yanivian.workshop.server.builder.BuildResult;
 import com.yanivian.workshop.server.builder.BuilderEngine;
 import com.yanivian.workshop.server.builder.SampleBuilderEngine;
 import com.yanivian.workshop.server.cache.SemanticCacheService;
+import com.yanivian.workshop.server.stream.SessionRelayService;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 public class WorkshopServerApplication {
 
@@ -26,11 +28,13 @@ public class WorkshopServerApplication {
     private final BuilderEngine builderEngine;
     private final SemanticCacheService cacheService;
     private final GeminiClient geminiClient;
+    private final SessionRelayService sessionRelayService;
 
     public WorkshopServerApplication(BuilderEngine builderEngine) {
         this.builderEngine = builderEngine;
         this.cacheService = new SemanticCacheService();
         this.geminiClient = new GeminiClient(System.getenv("GEMINI_API_KEY"));
+        this.sessionRelayService = new SessionRelayService();
 
         // Seed cache with baseline structures
         seedInitialCache();
@@ -135,6 +139,27 @@ public class WorkshopServerApplication {
             );
             ctx.json(favorites);
         });
+
+        // 4. Session Allocation & Status for Tabletop Streaming
+        server.post("/api/v1/sessions", ctx -> {
+            String sessionId = sessionRelayService.createSession();
+            ctx.json(Map.of(
+                "sessionId", sessionId,
+                "wsUrl", "/ws/stream/" + sessionId
+            ));
+        });
+
+        server.get("/api/v1/sessions/{sessionId}", ctx -> {
+            String sessionId = ctx.pathParam("sessionId");
+            boolean exists = sessionRelayService.hasSession(sessionId);
+            ctx.json(Map.of(
+                "sessionId", sessionId,
+                "active", exists
+            ));
+        });
+
+        // 5. Real-Time Tabletop World Streaming WebSocket
+        server.ws("/ws/stream/{sessionId}", sessionRelayService::configureWebSocket);
 
         server.start(port);
         logger.info("minecraft-workshop-server ready at http://localhost:{}", port);
