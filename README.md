@@ -30,6 +30,11 @@ Runs on Google Cloud Run (Java 21). Interacts with Google Gemini for architectur
 
 ## API Endpoints
 
+### Live Production Base URL
+```
+https://minecraft-workshop-server-481791752877.us-west2.run.app
+```
+
 ### 1. Health Check
 ```http
 GET /health
