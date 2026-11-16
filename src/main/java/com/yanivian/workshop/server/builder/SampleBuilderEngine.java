@@ -166,7 +166,7 @@ public class SampleBuilderEngine implements BuilderEngine {
         setVoxel(voxels, 8, 2, 3, 0);
         // Wooden lintel beam
         setVoxel(voxels, 7, 3, 3, 2);
-        setVoxel(voxels, 8, 3, 2, 2);
+        setVoxel(voxels, 8, 3, 3, 2);
 
         // Windows
         setVoxel(voxels, 5, 2, 3, 5);
